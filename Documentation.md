@@ -1,10 +1,10 @@
-## Squaw Valley Powder Inference: Documentation
+## Sugar Bowl Powder Inference: Documentation
 
 ### Motivation
 
 The goal of this project practice concepts and techniques related to exploratory data analysis
-and statistical inference. This project is motivated by my desire to is to use daily weather data from the [remote weather station](https://www.ncdc.noaa.gov/cdo-web/datasets/GHCND/stations/GHCND:USS0020K30S/detail)
-at Squaw Valley's High Camp to infer precipitation events at the ski resort. The project will 
+and statistical inference. This project is motivated by my desire to is to use daily weather data from the [remote weather station](https://raws.dri.edu/cgi-bin/rawMAIN.pl?caSUGB)
+at Sugar Bowl Ski Resort to infer precipitation events at the resort. The project will 
 progress according to the following steps:
 
 	1. Finding an appropriate weather dataset
@@ -19,8 +19,13 @@ progress according to the following steps:
 	
 ### Weather Data
 
-The dataset was obtained from the National Oceanic and Atmospheric Administration (NOAA) using their
-online [data tool](https://www.ncdc.noaa.gov/cdo-web/datatools/findstation). It contains daily 
-weather summary information related to precipitation, temperature, humidity, and windspeed. It covers
-the period from January 1st 2013 to January 1st 2017. The dataset is available on my GitHub page [here](www.snowbrains.com).
+The weather station was located using the [Tahoe Climate Information Management System](https://tahoeclim.dri.edu/). 
+The dataset was obtained from the weather station's [webpage](https://raws.dri.edu/cgi-bin/rawMAIN.pl?caSUGB). The complete original dataset contains daily 
+weather summary information related to precipitation, temperature, humidity, solar radiation, barometric pressure and windspeed. It covers
+the period from Octobet 1st 2008 to October 31st 2016. The dataset is available on my GitHub page [here](www.snowbrains.com). Note that
+the weather station was not operational for certain lengths of time during the study period and that data is missing for these peroids.
+
+### Importing the Data
+
+The data downloaded in ASCII text format from the weather station's database and formatted as a csv in Microsoft Excel.
 
