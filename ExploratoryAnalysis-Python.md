@@ -26,6 +26,7 @@ This section summarizes the hypotheses and questions which guided this analysis:
 3. Which were the largest snow years in the study period 
 4. Which month had the largest total snowfall in the study period
 5. What is the average yearly snowfall at Sugar Bowl
+6. Can I effectively model the single, double, multiple variable relationships to predict precipitation events?
 
 
 #### Importing and Cleaning the Data
@@ -38,11 +39,33 @@ This section summarizes the hypotheses and questions which guided this analysis:
 - Column added containing month as string
 - Column added containing change in snow depth
 - Column data types converted from object to numeric
-- Months with missing data stored in a dictionary as year-month pairs
+- Months with missing data stored in a dictionary
 
 
 #### Summary Statistics
 
 - Whole dataframe summarized using describe() function from pandas
 - Daily average precipitation computed by month with variance 
+- Daily average and standard deviation computed for all relevant factors
 - Compute the average total precipitation by month excluding months with missing data
+- Plotted monthly average precipitation as a bar chart with error bars
+
+
+#### Next Steps
+- Plot daily averages for each factor
+- Export figures
+- Export CSV's for use in R
+- Plot single variable distributions
+	* Precipitation vs month: Bar Chart
+	* Precipitation vs Pressure: Scatter (color by month) with Smooth (color by month)
+	* Precipitation vs Temperature: Scatter (color by month) with Smooth (color by month)
+	* Precipitation vs Humidity: Scatter (color by month) with Smooth (color by month)
+	* Precipitation vs Solar Rad: Scatter (color by month) with Smooth (color by month)
+- Plot two-variable distributions with precipitation
+	* Pressure/Temperature
+	* Pressure/Humidity
+	* Pressure/Solar Rad
+	* Temperature/Humidity
+	* Temperature/Solar Rad
+	* Humidity/Solar Rad
+	
