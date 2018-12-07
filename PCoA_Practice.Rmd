@@ -1,0 +1,80 @@
+---
+title: "PCoA with DataCamp"
+author: "John Lomas"
+date: "11/2/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Simple PCoA with mtcars
+
+PCoA works best with numerical data, so in the following analysis of mtcars we need to exclude the 'vs' and 'am' variables. The rest of the factors are numerical. 
+
+```{r}
+mtcars.pca <- prcomp(mtcars[,c(1:7,10,11)], 
+                     center = TRUE, 
+                     scale. = TRUE)
+summary(mtcars.pca)
+```
+
+Evidently PC1 contains approximately 63% of the total variance of the dataset. Thus, about two thirds of the information in the entire data set can be described by PC1. When including PC2, we cover 86% of the total variance in the data. 
+
+Let's look at the structure of our principle component object:
+```{r}
+str(mtcars.pca)
+```
+
+The principle component object contains datafor the following types:
+
+* The center point ($center)
+* The scaling ($scale)
+* The standard deviation of each PC (sdev)
+* The correlation between the initial variables and the PCs ($rotation)
+* The value of each sample in terms of the PCs ($x)
+
+## Plotting PCA
+
+For this visualization we will make a biplot; which includes both the position of each sample in terms of PC1 and PC2 and will also show how the initial variables map onto this.
+
+```{r}
+install.packages("devtools")
+library(devtools)
+install_github("vqv/ggbiplot")
+library(ggbiplot)
+```
+
+```{r}
+ggbiplot(mtcars.pca)
+```
+
+
+```{r}
+ggbiplot(mtcars.pca, labels = rownames(mtcars))
+```
+
+Now we can see that similar cars cluster together (like the sports cars in the top right). We can also see that cycl, hp, and disp provide the largest contribution to PC1. 
+
+## Interpresting the results
+
+Maybe we can get more information from the biplots above if we group the cars by their country of origin. Here, well put the cars into three categories: US, Europe, and Japan:
+
+```{r}
+mtcars.country <- c(rep("Japan", 3), rep("US",4), rep("Europe", 7),rep("US",3), "Europe", rep("Japan", 3), rep("US",4), rep("Europe", 3), "US", rep("Europe", 3))
+
+ggbiplot(mtcars.pca,ellipse=TRUE,  labels=rownames(mtcars),groups=mtcars.country)
+```
+
+
+Clearly, american cars are different than japanese cars but european cars are more spread between the two groups. American cars are characterized by high values of cyl, disp, and wt, while japanese cars are characterized by high mpg.
+
+Of course we have only looked at two of the principle components so far. Let's look at some additional principle components using the choices argument of ggbiplot:
+
+```{r}
+ggbiplot(mtcars.pca,ellipse=TRUE,choices=c(3,4),labels=rownames(mtcars), groups=mtcars.country)
+```
+
+This plot is not highly informative. This is expected however, because PC3 and PC4 both account for relatively little of the total variation in the data.
+

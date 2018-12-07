@@ -1,0 +1,232 @@
+---
+title: "Modeling Precipitation with Multiple Linear Regression"
+author: "John Lomas"
+date: "11/8/2018"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Set Up
+
+
+We'll begin by preparing the dataframe containing the weaather data from which we will construct our precipitation models.
+
+
+```{r, warning=FALSE, message=FALSE}
+# Load libraries necessary for model diagnostics
+library(car)
+library(MASS)
+library(dplyr)
+
+# Load the data and re-order the Months factor for visually appealing plotting
+weather <- read.csv("weather_df.csv")
+weather$Month = factor(weather$Month, levels(weather$Month)[c(5, 4, 8, 1, 
+                                                              9, 7, 6, 2, 
+                                                              12, 11, 10, 3)])
+
+# Remove samples where data is missing from one or more variables
+weather.complete <- weather[complete.cases(weather),]
+
+# Transform temperature from celusius to kelvin 
+weather.complete <- mutate(weather.complete, Tavg_K = Tavg + 273.15)
+weather.complete <- mutate(weather.complete, Tmax_K = Tmax + 273.15)
+weather.complete <- mutate(weather.complete, Tmin_K = Tmin + 273.15)
+head(weather.complete)
+```
+
+## Generate the full model
+
+
+We'll start by fitting a linear model using all of the potentially relevant variables from the weather dataset: Temperature, Pressure, Humidity, and Solar Radiation.
+
+
+```{r}
+# Generate the full model with Total Precipitation as the response variable
+fullModel <- lm(Total_Precip ~ Pressure + Tmin_K + Tmax_K + Tavg_K + 
+                                  Hmin + Hmax + Havg +
+                                  Solar_Rad, data = weather.complete)
+
+# Print summary of model fitting
+summary(fullModel)
+```
+
+
+Clearly, the full model is already probelmatic. There are multiple insignificant coefficients and the Adjsusted R-squared value is very low; indicating that the model represents littl of the total variation in the data set. Next, we gain an even clearer idea of the problems associated with the model by checking the assumptions of linear regression.
+
+With any multiple linear regression, the modeler assumes that:
+  * The errors are normal distributed
+  * The errors have a constant variance
+  * The the errors are statistically independent 
+  * The underlying function is linear in nature
+  * The independent variables are statistically independent
+  
+  
+## Model Diagnostics 
+
+First, we'll define functions that we'll use during for model diagnostics. 
+
+```{r}
+# Compute variance inflation factor
+VIF_func <- function(model) car::vif(model)
+
+# qq plot for studentized residuals
+QQ_func <- function(model) qqPlot(model, main="QQ Plot")
+
+# Residual histogram plot 
+ResHist_func <- function(model) {
+                      # Compute the studentized residuals
+                      sresid <- studres(model) 
+
+                      # Generate a histogram plot of the studentized residuals
+                      hist(sresid, freq=FALSE, 
+                           main="Distribution of Studentized Residuals", 
+                           xlim = c(-5,5), 
+                           ylim = c(0, 0.6), 
+                           breaks = 20)
+
+                      # Generate line to aid in viewing the distribution
+                      xfit<-seq(min(sresid),max(sresid),length=40) 
+                      yfit<-dnorm(xfit) 
+                      lines(xfit, yfit)
+}
+
+# component + residual plot 
+CRP_func <- function(model) crPlots(model, ylab = "Total_Precip")
+
+```
+### Multicollinearity 
+
+The first thing to check for is issues with multicollinearity. Multicollinearity occurs when the independent variables are coorelated. This is a problem because severe multicollinearity makes it difficult to accurately predict regression coefficients. 
+
+Here, we'll compute the Variance Inflation Factor (VIF) for each variable and look for those variables that have a VIF less than or equal to 10. 
+
+```{r}
+all_vifs <- VIF_func(fullModel)
+print(all_vifs)
+```
+
+Multicollinearity is a problem in the model and it will have to be delt with as we move forward.
+
+### Normality of Error Terms
+
+Next we'll evaluate whether the errors are normally distributed about the regression model. Here, we'll use a Q-Q PLot and look for the data to follow a linear trend.
+
+```{r}
+# qq plot for studentized residuals
+
+QQ_func(fullModel)
+```
+
+Normality is preserved until high precipitation days. This means that the model is likely performing poorly in the region where precipitation actually occurs.
+
+The non-normailty can also be observed using a residual histogram plot. The histogram below shows that the distribution of the residuals is skewed to the left; an indication that the assumption of normality is not being met.
+
+```{r}
+ResHist_func(fullModel)
+```
+
+### Constancy of error variance
+
+Next we'll check the assumption of homoskedasticity (constancy of error variance) using the Breusch-Pagan test, which tests the null hypothesis of homoskedasticity. We can also view the error variance using a spread-level plot to see how the variance changes. 
+
+```{r}
+# Breusch-Pagan test
+ncvTest(fullModel)
+```
+
+```{r, warning=FALSE,message=FALSE}
+# plot studentized residuals vs. fitted values 
+spreadLevelPlot(fullModel)
+```
+
+Clearly, the variances are not constant. The null hypothesis of homoskedasticity was soundly rejected by the Breusch-Pagan test and the variance clearly increases towards the right of the Spread-Level Plot. This is another problem that we will deal with going forward.
+
+### Non-linearity
+
+The last assumption we will look into is the assumpition that the predictor variables are linearly related to the response variable. For this we will look at the component residual plots. We will look for the data to generally follow a linear line of best fit.
+
+```{r}
+CRP_func(fullModel)
+```
+
+As we saw while looking at these distributions in the previous section, many of the variables do not vary linearly with respect to the total precipitation. An adequate transformation will be needed to obtain linearity.
+
+So far, we have identified many problems associated with the full model. These problems are:
+* The data is non-linear according to the Component Residual Plots
+* The error variances are not constant according to the Breusch-Pagan Test
+* The errors are not normally distributed via the Q-Q Plot
+* Severe Multicollinearity exists between the predictor variables
+
+Now we will attempt to remedy these issues...
+
+## Generate an improved model
+
+To address the multicollinearity problem, we can simply remove variables that are obviously realted and re-generate the model. Thus, instead of having all data related to temperaterature and humidity in the model, we will use only the daily average values
+
+```{r}
+reducedModel <- lm(Total_Precip ~ Pressure + Tavg_K + Havg + Solar_Rad, data = weather.complete)
+summary(reducedModel)
+```
+```{r}
+red_vifs <- car::vif(reducedModel)
+print(red_vifs)
+```
+
+Simply by removing clearly related variables, we now have a model with limited multicollinearity isues and a full set of significant regression coefficients. The Adjusted R-squared is about the same so there was no improvement in the model's predictive ability.
+
+Next, we'll perform the Yeo-Johnson transformation which might help our heteroskedasticity issue as well as our non-linearity issue. Afterwards, we will diagnose the model once more.
+
+```{r}
+# run the yeo-Johnson transformation
+bc <- boxCox(reducedModel, family="yjPower", plotit = FALSE)
+
+# Get the power for the transformation
+lambda <- bc$x[which.max(bc$y)]
+
+#Transform the depenedent variable
+TP.transformed <- yjPower(weather$Total_Precip, lambda)
+
+# Re-generate the model
+YJmodel <- lm(TP.transformed ~ Pressure + Tavg + Havg + Solar_Rad, data = weather)
+summary(YJmodel)
+```
+
+Notice that with our transformation, the Adjusted R-Squared has almost doubled (although the predictive ability of the model is still quite poor).
+
+Now lets check our normality, linearity, and variances once more....
+
+### Normality
+
+```{r}
+# qq plot for studentized residuals
+QQ_func(YJmodel)
+```
+
+### Linearity 
+
+```{r}
+# component + residual plot 
+CRP_func(YJmodel)
+```
+
+### Error Variance
+
+```{r}
+# Breusch-Pagan test
+ncvTest(YJmodel)
+```
+
+```{r, warning=FALSE}
+# plot studentized residuals vs. fitted values 
+spreadLevelPlot(YJmodel)
+```
+
+### Conclusions
+
+Removing some model terms and introducing the Yeo-Johnson Transformation eliminated the multicollinearity issue and helped to normalize the error distribution. However, these measures had a limited affect on the problems with heteroskedasticity and non-linearty. In order to effictively model precipitation events, other model types may need to be considered. 
+

@@ -1,0 +1,156 @@
+---
+title: "Principle Component Analysis of Sugar Bowl Weather Data"
+author: "John Lomas"
+date: "11/2/2018"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Principle Component Analysis
+
+Principle component analysis is often performed during exploratory data analysis when there are many varaibles and/or multicollinearty is an issue. It is an orthogonal transformation which simply computes a new set of axes from which to observe the data. The first axis (or principle component) is always in the direction of greatest variability. The seond principle component is in the second greatest direction of variability, and so on. What PCoA gives you in terms of dimensionality reduction and independence, you lose in interpretability (since every principle component is a linear combination of every original varaible).
+
+In the previous modeling section we saw clear evidence of multicollinearty and decided to remove 4 variables because of it. Here, we'll use PCoA to eliminate the multicollinearity issue while retaining as much of the information as possible.
+
+
+## Generating Principal Components
+
+We'll begin by loading the data and cleaning it up for the analysis:
+
+```{r, warning=FALSE, message=FALSE}
+# Load libraries 
+library(ggbiplot)
+library(ggplot2)
+library(plotly)
+library(rsm)
+library(spatial)
+library(car)
+
+# Load data and format the months factor for nice plotting
+weather <- read.csv("weather_df.csv")
+weather$Month = factor(weather$Month, levels(weather$Month)[c(5, 4, 8, 1, 9, 
+                                                              7, 6, 2, 12, 11, 
+                                                              10, 3)])
+head(weather)
+```
+
+```{r}
+#Remove samples where data is missing from one or more variables
+weather.complete <- weather[complete.cases(weather),]
+
+#Generate principle components
+weather.pca <- prcomp(weather.complete[,c(5, 9:15)], 
+                      center = TRUE,
+                      scale. = TRUE)
+
+#View the principle components
+summary(weather.pca)
+```
+
+After building the principle components for the data set, the sumary tells us that PC1 contains 69% of the total variability, PC2 contains 13% of the variability, and almost all of the variability is accounted for by PC1 - PC4. Interestingly, 82.5% of the total variability is accounted for in the first two principle componets. Because most of the varaition is in the first two principle components, we can move forward with PC1 and PC2 for further analysis.
+
+
+## Plotting the Principle Components
+
+One useful chart for visualizing principle components is a Biplot. In this type of chart, the original axes are projected onto a scaatter plot using principle components as the primary axes. This allows you to see how the principle components interact with the original variables.
+
+```{r}
+ggbiplot(weather.pca, alpha = .25, ellipse = TRUE, groups = weather.complete$Month)
+```
+
+In this biplot it is evident that Solar Radiation plays a major role in determining PC1 and, therefore, the whole dataset. Furthermore, we can see how the variance increases in the winter months (pink) and decreases in the summer months (green/blue). 
+
+
+## How do the Principle Components Relate to Total Precipitation?
+
+Now, we can look at the relationship between the principle components and the total precipitation by making scatter plots.
+
+```{r}
+PCs <- weather.pca$x
+PCs <- as.data.frame(PCs)
+PC.complete <- cbind(PCs,weather.complete$Total_Precip, weather.complete$Month)
+colnames(PC.complete)[9:10] <- c("Total_Precip", "Month")
+ggplot(data = PC.complete, mapping = aes(x = PC1, y = Total_Precip)) +
+  geom_point(mapping = aes(color = Month))
+```
+
+```{r}
+ggplot(data = PC.complete, mapping = aes(x = PC2, y = Total_Precip)) +
+  geom_point(mapping = aes(color = Month))
+```
+
+```{r}
+ggplot(data = PC.complete, mapping = aes(x = PC3, y = Total_Precip)) +
+  geom_point(mapping = aes(color = Month))
+```
+
+
+
+```{r}
+plot_ly(PC.complete, x = ~PC1, 
+                 y = ~PC2, 
+                 z = ~Total_Precip, 
+                 type = "scatter3d", 
+                 color = ~Month,
+                 mode = "markers",
+                 marker = list(line = list(color = "black", width = .75)))
+
+```
+
+Evidently, precipitation events are favored by low values of PC1 (the component related to solar radiation and temperature) and high values of PC2. I say favored because there are clearly many low PC1, high PC2 days on which precipitation did not occur.
+
+
+## Principle Component Regression
+
+Having analyzed the principle components and seen a clear response between the first two principle components and total precipitation, we can build a new regression model based on the principle components. I'm moving on with a fourth degree polynomial type model based on trail and error using the fit diagnostics in the previous section to guide me.
+
+```{r}
+fit <- lm(Total_Precip ~ PC1 + PC1^2 + PC1^3 + PC1^4 +
+               PC1:PC2 + I(PC1^2):PC2 + #I(PC1^3):PC2 +
+               PC1:I(PC2^2) + I(PC1^2):I(PC2^2) +
+               I(PC2^3) + PC1:I(PC2^3) +
+               I(PC2^4), data = PC.complete)
+
+summary(fit)
+persp(fit, PC1 ~ PC2, zlab = "Total_Precip")
+
+```
+
+Though the model has all significant regression coefficients, the Adjusted R-squared value is still relatively low, indicating poor predictive ability. Now we can run the model diagnostics to see if principle component regression improved our model at all.
+
+```{r}
+all_vifs <- car::vif(fit)
+print(all_vifs)
+```
+
+Notice that we have no multicollinearity issues as indicated by the above variance inflation factors.
+
+```{r, message=FALSE}
+# qq plot for studentized residuals
+
+qqPlot(fit, main="QQ Plot")
+```
+
+The Q-Q Plot indicates that we are still not satisfying the normality assumption.
+
+```{r}
+# Breusch-Pagan test
+ncvTest(fit)
+```
+
+```{r}
+# plot studentized residuals vs. fitted values 
+spreadLevelPlot(fit)
+```
+
+Again the varainces are not constant. 
+
+## Conclusions
+
+The principle component analysis allowed us to observe some interesting trends in the weather data: including the importance of solar radiation and the increased varaince in the winter. Additinoally, the dimensionality reduction alowed us to build a visually appealing model, although principle component regression did not improve the performance of our model. 
+

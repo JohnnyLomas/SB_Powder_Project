@@ -49,23 +49,18 @@ This section summarizes the hypotheses and questions which guided this analysis:
 - Daily average and standard deviation computed for all relevant factors
 - Compute the average total precipitation by month excluding months with missing data
 - Plotted monthly average precipitation as a bar chart with error bars
+- Plotted daily average values for each relevant variable by month
+- Exported CSV's for use in R
 
+#### Distributions
 
-#### Next Steps
-- Plot daily averages for each factor
-- Export figures
-- Export CSV's for use in R
-- Plot single variable distributions
-	* Precipitation vs month: Bar Chart
-	* Precipitation vs Pressure: Scatter (color by month) with Smooth (color by month)
-	* Precipitation vs Temperature: Scatter (color by month) with Smooth (color by month)
-	* Precipitation vs Humidity: Scatter (color by month) with Smooth (color by month)
-	* Precipitation vs Solar Rad: Scatter (color by month) with Smooth (color by month)
-- Plot two-variable distributions with precipitation
-	* Pressure/Temperature
-	* Pressure/Humidity
-	* Pressure/Solar Rad
-	* Temperature/Humidity
-	* Temperature/Solar Rad
-	* Humidity/Solar Rad
+- Plot single variable distributions by probability density
+- Plot single variable scatter plots to total precipitation
+- Plot two-variable scatter plots with precipitation
+
+#### Modeling 
+- Principle component analysis (dimensionality reduction)
+- Regression model with top few principal components
+- Other model types with principal components
+- Machine learning model
 	
