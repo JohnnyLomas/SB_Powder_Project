@@ -6,9 +6,13 @@
 
 [Code](#code)
 
+[Reports](#reports)
+
 [Data Set](#data-set)
 
 [Driving Questions/Hypotheses](#driving-questions/hypotheses)
+
+[Conclusions](#conclusions)
 
 ### Motivation
 
@@ -54,3 +58,21 @@ Factor Units:
 - Snow Depth (mm)
 
 ### Driving Questions and Hypotheses
+
+**Hypotheses**
+
+1. Temperature, pressure, and relative humidity play a large role in precipitation events
+2. March is typically the snowiest month at Sugar Bowl
+
+
+**Questions**
+
+1. What is the snowiest month at Sugar Bowl on average
+2. What factors are most important for determining the occurence of precipitation events 
+3. Can I effectively model multiple variable relationships to predict precipitation events using linear regression techniques?
+
+### Conclusions 
+
+Largely, the conclusioins of this analysis followed along the lines of intuition. For example, the distributional analysis indicated that precipitation events occur during low pressure, low temperature systems when there is low solar radiation and high humidity. Interestingly, according to principle component analysis, solar radiation represented the largest total portion of the variation in the data set. This makes sense intuitively because clouds must be present for precipitation to occur. Another interesting observation was that the largest precipitation events seem to occur when the daily average temperature is close to zero degrees celcius. December is the snowiest month on average at Sugar Bowl but with the highest variance; however, March is the next snowiest month with a much lower varaince. This may be why March is often thought of as the snowiest month in the Sierra; it's simply more consistent. 
+
+All the models fitted to the weather data had low Adjusted R-squared values and thus, had low predictive abilities. The highest Adjusted R-squared reached for any model was approximately 0.4. This was likely due to the fact that days with similar pressure, temperature, radiation, and humidity had both low and high precipitation results. This problem also negatively effected the models by introducing heteroskedasticity and non-normality of the errors. Evidently, other factors are needed to effectively predict precipitation events. 
