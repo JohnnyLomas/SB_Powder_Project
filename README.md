@@ -1,4 +1,4 @@
-# SV_Powder_Inference
+# SB_Powder_Poject
 
 ### Jump-To
 
@@ -19,7 +19,7 @@ precipitation events. The analysis was performed using both python and R.
 
 ### Code 
 
-The code fro this project is provided in a set of ipython notebooks and Rmarkdown documents. Links to these files
+The code for this project is provided in a set of ipython notebooks and Rmarkdown documents. Links to these files
 are provided below:
 
 - Data cleaning and summary statistics: [Ipython Notebook]()
