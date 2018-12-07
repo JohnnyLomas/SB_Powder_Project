@@ -22,11 +22,19 @@ precipitation events. The analysis was performed using both python and R.
 The code for this project is provided in a set of ipython notebooks and Rmarkdown documents. Links to these files
 are provided below:
 
-- Data cleaning and summary statistics: [Ipython Notebook]()
-- Distributions and scatter plots: [Rmarkdown]()
-- Regression and Polynomial Modeling: [Rmarkdown]() 
-- PCoA and PCoR: [Rmarkdown]()
-	
+- Data cleaning and summary statistics: [Ipython Notebook](https://github.com/JohnnyLomas/SB_Powder_Project/blob/master/ExploratoryAnalysis.ipynb)
+- Distributions and scatter plots: [Rmarkdown](https://github.com/JohnnyLomas/SB_Powder_Project/blob/master/Distributions.Rmd)
+- Regression Modeling: [Rmarkdown](https://github.com/JohnnyLomas/SB_Powder_Project/blob/master/Modeling.Rmd) 
+- PCoA and PCoR: [Rmarkdown](https://github.com/JohnnyLomas/SB_Powder_Project/blob/master/PCoA.Rmd)
+
+### Reports
+
+The knitted Rmarkdown documents are provided in both PDF and HTML format. The PDFs are easily viewable in Github, but do not include Plotly HTML widgets. The HTMLs can be downloaded and viewed seperately. 
+
+- Distributions and scatter plots: [PDF](https://github.com/JohnnyLomas/SB_Powder_Project/blob/master/Distributions.pdf), [HTML](https://github.com/JohnnyLomas/SB_Powder_Project/blob/master/Distributions.html)
+- Regression Modeling: [PDF](https://github.com/JohnnyLomas/SB_Powder_Project/blob/master/Modeling.pdf), [HTML](https://github.com/JohnnyLomas/SB_Powder_Project/blob/master/Modeling.html)
+- PCoA and PCoR: [PDF](https://github.com/JohnnyLomas/SB_Powder_Project/blob/master/PCoA.pdf), [HTML](https://github.com/JohnnyLomas/SB_Powder_Project/blob/master/PCoA.html)
+
 ### Data Set
 
 The weather station was located using the [Tahoe Climate Information Management System](https://tahoeclim.dri.edu/). 
