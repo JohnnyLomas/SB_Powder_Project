@@ -57,22 +57,16 @@ Factor Units:
 - Windspeed (m/s)
 - Snow Depth (mm)
 
-### Driving Questions and Hypotheses
-
-**Hypotheses**
+### Driving Hypotheses
 
 1. Temperature, pressure, and relative humidity play a large role in precipitation events
 2. March is typically the snowiest month at Sugar Bowl
+3. Precipitation events can be effectively modeled using linear regression techniques
 
-
-**Questions**
-
-1. What is the snowiest month at Sugar Bowl on average
-2. What factors are most important for determining the occurence of precipitation events 
-3. Can I effectively model multiple variable relationships to predict precipitation events using linear regression techniques?
 
 ### Conclusions 
 
-Largely, the conclusioins of this analysis followed along the lines of intuition. For example, the distributional analysis indicated that precipitation events occur during low pressure, low temperature systems when there is low solar radiation and high humidity. Interestingly, according to principle component analysis, solar radiation represented the largest total portion of the variation in the data set. This makes sense intuitively because clouds must be present for precipitation to occur. Another interesting observation was that the largest precipitation events seem to occur when the daily average temperature is close to zero degrees celcius. December is the snowiest month on average at Sugar Bowl but with the highest variance; however, March is the next snowiest month with a much lower varaince. This may be why March is often thought of as the snowiest month in the Sierra; it's simply more consistent. 
+1. Temperature and humidity clearly played a large role in precipitation events at Sugar Bowl Ski Resort during the study peroid, but the effect of pressure was less well defined. Temperatures close to 0 degrees Celsius and high values of relative humidity (~90-100%) were the most favorable for precipitation events. Pressure readings associated with precipitation events were more variable and do not seem to be a good predictor of precipitation. Interestingly, solar radiation appeared to play a large role due to the fact that it was almost perfectly aligned with the first principle component in the principle component analysis. 
+2. On Average, December was the snowiest month in the study period; however, this average was accompanied by the largest variance. March was the second snowiest month on average with much smaller variance relative to December. 
+3. The predictive ability of all linear models fit to the dataset was low due to the fact that precipitation producing conditions of temperature, pressure, solar radiation, and humidity also produced days with no precipitation. More factors are needed to deconvolute precipitation producing days from non-producing days with the same condiitons. No model achieved an adjusted R-squared greater than ~0.4. Severe multicollinearity and heteroskedasticity problems were prevelant in the data and transformations such as Principle Component Analysis and Box-Cox Transformation were employed to alleviate these problems. The highest performing model was selected using fourth-degree polynomial terms. 
 
-All the models fitted to the weather data had low Adjusted R-squared values and thus, had low predictive abilities. The highest Adjusted R-squared reached for any model was approximately 0.4. This was likely due to the fact that days with similar pressure, temperature, radiation, and humidity had both low and high precipitation results. This problem also negatively effected the models by introducing heteroskedasticity and non-normality of the errors. Evidently, other factors are needed to effectively predict precipitation events. 
